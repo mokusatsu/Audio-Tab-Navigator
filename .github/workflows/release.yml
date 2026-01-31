@@ -1,6 +1,7 @@
 name: Build release zips (chrome & firefox)
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
