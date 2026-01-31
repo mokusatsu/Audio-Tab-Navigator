@@ -1,18 +1,70 @@
 name: Build release zips (chrome & firefox)
 
 on:
-  workflow_dispatch:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to create/upload (e.g. v1.2.3)"
+        required: true
+        type: string
+      target:
+        description: "Target commit/branch for tag when creating a new release (default: current commit SHA)"
+        required: false
+        type: string
+      title:
+        description: "Release title (default: same as tag)"
+        required: false
+        type: string
+      prerelease:
+        description: "Mark as prerelease when creating"
+        required: false
+        type: boolean
+        default: false
+      draft:
+        description: "Create as draft when creating"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 jobs:
-  build-and-attach:
+  build-create-and-attach:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine tag/title/target
+        id: vars
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            TITLE="${TAG}"
+            TARGET=""
+            PRERELEASE="false"
+            DRAFT="false"
+          else
+            TAG="${{ inputs.tag }}"
+            TITLE="${{ inputs.title }}"
+            TARGET="${{ inputs.target }}"
+            PRERELEASE="${{ inputs.prerelease }}"
+            DRAFT="${{ inputs.draft }}"
+            if [ -z "${TITLE}" ]; then TITLE="${TAG}"; fi
+            if [ -z "${TARGET}" ]; then TARGET="${{ github.sha }}"; fi
+          fi
+
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "title=${TITLE}" >> "$GITHUB_OUTPUT"
+          echo "target=${TARGET}" >> "$GITHUB_OUTPUT"
+          echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+          echo "draft=${DRAFT}" >> "$GITHUB_OUTPUT"
 
       - name: Prepare dist folders
         run: |
@@ -20,7 +72,6 @@ jobs:
           rm -rf dist-chrome dist-firefox
           mkdir -p dist-chrome dist-firefox
 
-          # 共通ファイルをコピー（除外あり）
           rsync -a \
             --exclude 'assets/' \
             --exclude 'store_listing.txt' \
@@ -35,23 +86,44 @@ jobs:
             --exclude 'manifest.firefox.json' \
             src/ dist-firefox/
 
-          # 各manifestを manifest.json として配置
           cp src/manifest.chrome.json dist-chrome/manifest.json
           cp src/manifest.firefox.json dist-firefox/manifest.json
 
       - name: Create zip files (include tag in filename)
         run: |
           set -euo pipefail
-          TAG="${{ github.event.release.tag_name }}"
+          TAG="${{ steps.vars.outputs.tag }}"
           (cd dist-chrome && zip -r "../extension-chrome-${TAG}.zip" .)
           (cd dist-firefox && zip -r "../extension-firefox-${TAG}.zip" .)
 
-      - name: Attach assets to GitHub Release
+      - name: Ensure release exists (create if missing)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          TAG="${{ github.event.release.tag_name }}"
+          TAG="${{ steps.vars.outputs.tag }}"
+          TITLE="${{ steps.vars.outputs.title }}"
+          TARGET="${{ steps.vars.outputs.target }}"
+          PRERELEASE="${{ steps.vars.outputs.prerelease }}"
+          DRAFT="${{ steps.vars.outputs.draft }}"
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists."
+            exit 0
+          fi
+
+          ARGS=( "${TAG}" --title "${TITLE}" --target "${TARGET}" --generate-notes )
+          if [ "${PRERELEASE}" = "true" ]; then ARGS+=( --prerelease ); fi
+          if [ "${DRAFT}" = "true" ]; then ARGS+=( --draft ); fi
+
+          gh release create "${ARGS[@]}"
+
+      - name: Upload assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.vars.outputs.tag }}"
           gh release upload "${TAG}" \
             "extension-chrome-${TAG}.zip" "extension-firefox-${TAG}.zip" \
             --clobber
