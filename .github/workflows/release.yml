@@ -1,0 +1,56 @@
+name: Build release zips (chrome & firefox)
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-attach:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare dist folders
+        run: |
+          set -euo pipefail
+          rm -rf dist-chrome dist-firefox
+          mkdir -p dist-chrome dist-firefox
+
+          # 共通ファイルをコピー（除外あり）
+          rsync -a \
+            --exclude 'assets/' \
+            --exclude 'store_listing.txt' \
+            --exclude 'manifest.chrome.json' \
+            --exclude 'manifest.firefox.json' \
+            src/ dist-chrome/
+
+          rsync -a \
+            --exclude 'assets/' \
+            --exclude 'store_listing.txt' \
+            --exclude 'manifest.chrome.json' \
+            --exclude 'manifest.firefox.json' \
+            src/ dist-firefox/
+
+          # 各manifestを manifest.json として配置
+          cp src/manifest.chrome.json dist-chrome/manifest.json
+          cp src/manifest.firefox.json dist-firefox/manifest.json
+
+      - name: Create zip files (include tag in filename)
+        run: |
+          set -euo pipefail
+          TAG="${{ github.event.release.tag_name }}"
+          (cd dist-chrome && zip -r "../extension-chrome-${TAG}.zip" .)
+          (cd dist-firefox && zip -r "../extension-firefox-${TAG}.zip" .)
+
+      - name: Attach assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ github.event.release.tag_name }}"
+          gh release upload "${TAG}" \
+            "extension-chrome-${TAG}.zip" "extension-firefox-${TAG}.zip" \
+            --clobber
