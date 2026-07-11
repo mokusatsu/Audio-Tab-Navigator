@@ -1,13 +1,245 @@
-body { width: 350px; margin: 0; padding: 0; font-family: sans-serif; background-color: #f9f9f9; }
-header { background-color: #4285f4; color: white; padding: 10px 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-h1 { margin: 0; font-size: 16px; }
-#tab-list-container { max-height: 400px; overflow-y: auto; }
-#tab-list { list-style: none; margin: 0; padding: 0; }
-.tab-item { display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid #eee; cursor: pointer; }
-.tab-item:hover { background-color: #f0f0f0; }
-.favicon { width: 16px; height: 16px; margin-right: 12px; flex-shrink: 0; }
-.tab-info { flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; color: #333; }
-.close-btn { padding: 5px 8px; margin-left: 10px; background: none; border: none; color: #999; cursor: pointer; font-size: 18px; border-radius: 4px; }
-.close-btn:hover { background-color: #ffebee; color: #d32f2f; }
-.hidden { display: none; }
-#empty-message { padding: 30px 15px; text-align: center; color: #888; font-size: 14px; }
+:root {
+  color-scheme: light dark;
+  /* ライトモード (デフォルト) */
+  --bg-color: #f3f4f6;
+  --card-bg: #ffffff;
+  --card-hover: #f9fafb;
+  --text-primary: #374151;
+  --text-active: #111827;
+  --text-muted: #4b5563; /* コントラスト比向上のため暗めに変更 */
+  --accent-color: #3b82f6;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --danger-color: #ef4444;
+  --success-color: #10b981;
+  --border-color: #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.force-light) {
+    /* ダークモード */
+    --bg-color: #1a1b26;
+    --card-bg: #24283b;
+    --card-hover: #2f3549;
+    --text-primary: #c0caf5; /* コントラスト比向上のため明るめに変更 */
+    --text-active: #ffffff;  /* コントラスト比向上のため白に変更 */
+    --text-muted: #9aa2c6;   /* コントラスト比向上のため大幅に明るく変更 */
+    --accent-color: #7aa2f7;
+    --accent-gradient: linear-gradient(135deg, #7aa2f7 0%, #bb9af3 100%);
+    --danger-color: #f7768e;
+    --success-color: #9ece6a;
+    --border-color: #2f3549;
+  }
+}
+
+:root.force-dark {
+  /* 強制ダークモード */
+  --bg-color: #1a1b26;
+  --card-bg: #24283b;
+  --card-hover: #2f3549;
+  --text-primary: #c0caf5;
+  --text-active: #ffffff;
+  --text-muted: #9aa2c6;
+  --accent-color: #7aa2f7;
+  --accent-gradient: linear-gradient(135deg, #7aa2f7 0%, #bb9af3 100%);
+  --danger-color: #f7768e;
+  --success-color: #9ece6a;
+  --border-color: #2f3549;
+}
+
+:root.force-light {
+  /* 強制ライトモード */
+  --bg-color: #f3f4f6;
+  --card-bg: #ffffff;
+  --card-hover: #f9fafb;
+  --text-primary: #374151;
+  --text-active: #111827;
+  --text-muted: #4b5563;
+  --accent-color: #3b82f6;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --danger-color: #ef4444;
+  --success-color: #10b981;
+  --border-color: #e5e7eb;
+}
+
+body {
+  width: 350px;
+  min-height: 200px; /* Chromeのポップアップ高さ制限バグ対策 */
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-active);
+  overflow-x: hidden;
+}
+
+.app-header {
+  background: var(--accent-gradient);
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logo-icon {
+  font-size: 14px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+#tab-list-container {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.tab-section {
+  padding: 8px 12px;
+}
+
+.section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin: 6px 0;
+  font-weight: 700;
+}
+
+.tab-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: background-color 0.2s, transform 0.1s;
+  cursor: pointer;
+}
+
+.tab-item:hover {
+  background-color: var(--card-hover);
+  transform: translateY(-1px);
+}
+
+.favicon {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.tab-info {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-title {
+  font-size: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-active);
+}
+
+.tab-time {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.btn:hover {
+  background-color: rgba(128, 128, 128, 0.15);
+  color: var(--text-active);
+}
+
+.btn-close:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--danger-color);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.empty-message {
+  padding: 20px 10px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  background-color: var(--card-bg);
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+}
+
+/* Sound wave animation */
+.sound-wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.sound-wave span {
+  display: block;
+  width: 2px;
+  background-color: var(--success-color);
+  animation: bounce 0.8s infinite ease-in-out alternate;
+}
+
+.sound-wave span:nth-child(2) { animation-delay: 0.2s; }
+.sound-wave span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0% { height: 2px; }
+  100% { height: 10px; }
+}

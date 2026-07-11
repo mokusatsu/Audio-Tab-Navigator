@@ -6,12 +6,24 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <header>
-    <h1>音声再生中のタブ</h1>
+  <header class="app-header">
+    <div class="logo-area">
+      <span class="logo-icon">🎵</span>
+      <h1>Audio Tab Navigator</h1>
+    </div>
   </header>
   <main id="tab-list-container">
-    <div id="empty-message" class="hidden">現在、音声を出力しているタブはありません</div>
-    <ul id="tab-list"></ul>
+    <section class="tab-section">
+      <h2 class="section-title">再生中</h2>
+      <div id="active-empty-message" class="empty-message hidden">現在、音声を出力しているタブはありません</div>
+      <ul id="active-tab-list" class="tab-list"></ul>
+    </section>
+
+    <section class="tab-section">
+      <h2 class="section-title">最近再生したタブ (最大5件)</h2>
+      <div id="history-empty-message" class="empty-message hidden">履歴はありません</div>
+      <ul id="history-tab-list" class="tab-list"></ul>
+    </section>
   </main>
   <script src="popup.js"></script>
 </body>

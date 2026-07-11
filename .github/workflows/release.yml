@@ -89,6 +89,19 @@ jobs:
           cp src/manifest.chrome.json dist-chrome/manifest.json
           cp src/manifest.firefox.json dist-firefox/manifest.json
 
+      - name: Inject version into manifest files
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.vars.outputs.tag }}"
+          VERSION=$(echo "${TAG}" | sed 's/^v//')
+          echo "Injecting version ${VERSION} into manifest files"
+          
+          jq --arg ver "${VERSION}" '.version = $ver' dist-chrome/manifest.json > temp.json
+          mv temp.json dist-chrome/manifest.json
+          
+          jq --arg ver "${VERSION}" '.version = $ver' dist-firefox/manifest.json > temp.json
+          mv temp.json dist-firefox/manifest.json
+
       - name: Create zip files (include tag in filename)
         run: |
           set -euo pipefail
