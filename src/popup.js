@@ -68,16 +68,27 @@
   // 即座にテーマ判定を実行
   initTheme();
 
+  // HTML要素に翻訳を適用する
+  function applyI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const message = browserAPI.i18n.getMessage(key);
+      if (message) {
+        element.textContent = message;
+      }
+    });
+  }
+
   function formatRelativeTime(timestamp) {
     const diffMs = Date.now() - timestamp;
     const diffSec = Math.floor(diffMs / 1000);
-    if (diffSec < 10) return 'たった今停止';
-    if (diffSec < 60) return `${diffSec}秒前`;
+    if (diffSec < 10) return browserAPI.i18n.getMessage('timeJustNow');
+    if (diffSec < 60) return browserAPI.i18n.getMessage('timeSecondsAgo', [diffSec.toString()]);
     const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return `${diffMin}分前`;
+    if (diffMin < 60) return browserAPI.i18n.getMessage('timeMinutesAgo', [diffMin.toString()]);
     const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return `${diffHr}時間前`;
-    return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (diffHr < 24) return browserAPI.i18n.getMessage('timeHoursAgo', [diffHr.toString()]);
+    return browserAPI.i18n.getMessage('timeDaysAgo', [Math.floor(diffHr / 24).toString()]);
   }
 
   function createTabItemElement(tab, isHistory, historyTimestamp) {
@@ -123,8 +134,8 @@
     const closeBtn = document.createElement('button');
     closeBtn.className = 'btn btn-close';
     closeBtn.textContent = '✕';
-    closeBtn.title = 'タブを閉じる';
-    closeBtn.setAttribute('aria-label', 'タブを閉じる');
+    closeBtn.title = browserAPI.i18n.getMessage('closeTabAriaLabel');
+    closeBtn.setAttribute('aria-label', browserAPI.i18n.getMessage('closeTabAriaLabel'));
 
     closeBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -218,5 +229,8 @@
 
   browserAPI.tabs.onRemoved.addListener(refreshTabList);
 
-  document.addEventListener('DOMContentLoaded', refreshTabList);
+  document.addEventListener('DOMContentLoaded', () => {
+    applyI18n();
+    refreshTabList();
+  });
 })();

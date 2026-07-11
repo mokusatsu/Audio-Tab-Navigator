@@ -1,0 +1,58 @@
+{
+  "extName": {
+    "message": "Audio Tab Navigator"
+  },
+  "extDesc": {
+    "message": "Quickly find, switch to, or close tabs that are outputting audio."
+  },
+  "sectionActive": {
+    "message": "Audible Tabs"
+  },
+  "sectionHistory": {
+    "message": "Recently Played (Max 5)"
+  },
+  "emptyActive": {
+    "message": "No tabs are currently playing audio"
+  },
+  "emptyHistory": {
+    "message": "No history available"
+  },
+  "closeTabAriaLabel": {
+    "message": "Close tab"
+  },
+  "timeJustNow": {
+    "message": "Just now"
+  },
+  "timeSecondsAgo": {
+    "message": "$1s ago",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeMinutesAgo": {
+    "message": "$1m ago",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeHoursAgo": {
+    "message": "$1h ago",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeDaysAgo": {
+    "message": "$1d ago",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  }
+}
