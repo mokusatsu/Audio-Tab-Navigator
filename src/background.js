@@ -231,8 +231,30 @@ browserAPI.runtime.onStartup.addListener(async () => {
 // ポップアップからの履歴要求メッセージの処理
 browserAPI.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === 'getHistory') {
-    getAudioHistory().then((history) => {
-      sendResponse({ history: history });
+    getAudioHistory().then(async (history) => {
+      const cleanHistory = [];
+      for (const item of history) {
+        try {
+          // tabs.get が成功すれば生存しているとみなす
+          const tab = await browserAPI.tabs.get(item.id);
+          if (tab) {
+            cleanHistory.push(item);
+          }
+        } catch (e) {
+          // tabs.get が失敗した場合は閉じられたとみなして除外する
+        }
+      }
+
+      // もし無効なタブが除外されていたら、ストレージを更新
+      if (cleanHistory.length !== history.length) {
+        try {
+          await saveAudioHistory(cleanHistory);
+        } catch (err) {
+          console.error('Failed to save cleaned history:', err);
+        }
+      }
+
+      sendResponse({ history: cleanHistory });
     });
   }
   return true; // 非同期のレスポンスを有効にする
