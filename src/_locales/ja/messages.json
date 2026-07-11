@@ -1,0 +1,58 @@
+{
+  "extName": {
+    "message": "Audio Tab Navigator"
+  },
+  "extDesc": {
+    "message": "音声を出力しているタブを素早く見つけ、切り替えやクローズを行うための拡張機能です。"
+  },
+  "sectionActive": {
+    "message": "再生中"
+  },
+  "sectionHistory": {
+    "message": "最近再生したタブ（最大5件）"
+  },
+  "emptyActive": {
+    "message": "現在、音声を出力しているタブはありません"
+  },
+  "emptyHistory": {
+    "message": "履歴はありません"
+  },
+  "closeTabAriaLabel": {
+    "message": "タブを閉じる"
+  },
+  "timeJustNow": {
+    "message": "たった今"
+  },
+  "timeSecondsAgo": {
+    "message": "$1秒前",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeMinutesAgo": {
+    "message": "$1分前",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeHoursAgo": {
+    "message": "$1時間前",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeDaysAgo": {
+    "message": "$1日前",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  }
+}
