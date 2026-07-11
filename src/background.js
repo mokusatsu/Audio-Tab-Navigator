@@ -3,10 +3,41 @@
  */
 const browserAPI = (typeof browser !== 'undefined') ? browser : chrome;
 
-// 履歴管理用のメモリ変数
-let audioHistory = [];
 // 現在音声再生中のタブIDのセット（音声停止時の検知に使用）
 const activeAudibleTabs = new Set();
+
+/**
+ * 履歴をローカルストレージから取得するヘルパー関数
+ */
+async function getAudioHistory() {
+  return new Promise((resolve) => {
+    browserAPI.storage.local.get(['audioHistory'], (result) => {
+      resolve(result.audioHistory || []);
+    });
+  });
+}
+
+/**
+ * 履歴をローカルストレージに保存するヘルパー関数
+ */
+async function saveAudioHistory(history) {
+  return new Promise((resolve) => {
+    browserAPI.storage.local.set({ audioHistory: history }, () => {
+      resolve();
+    });
+  });
+}
+
+/**
+ * 履歴データをクリアする（ブラウザ起動時およびリロード時用）
+ */
+async function clearHistory() {
+  try {
+    await saveAudioHistory([]);
+  } catch (e) {
+    console.error('Failed to clear audio history:', e);
+  }
+}
 
 /**
  * オフスクリーンキャンバスを使用して動的にアイコンを生成する
@@ -105,10 +136,14 @@ async function updateExtensionState() {
  */
 async function handleAudibleChange(tabId, audible) {
   try {
+    let history = await getAudioHistory();
     if (audible === true) {
       activeAudibleTabs.add(tabId);
       // 再生中になったため、履歴リストにあれば削除する
-      audioHistory = audioHistory.filter(item => item.id !== tabId);
+      const filtered = history.filter(item => item.id !== tabId);
+      if (filtered.length !== history.length) {
+        await saveAudioHistory(filtered);
+      }
     } else if (audible === false) {
       if (activeAudibleTabs.has(tabId)) {
         activeAudibleTabs.delete(tabId);
@@ -117,10 +152,10 @@ async function handleAudibleChange(tabId, audible) {
         const tab = await browserAPI.tabs.get(tabId);
         if (tab && tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')) {
           // 重複するURLの古い履歴を削除
-          audioHistory = audioHistory.filter(item => item.url !== tab.url);
+          history = history.filter(item => item.url !== tab.url);
 
           // 先頭に新規履歴を追加
-          audioHistory.unshift({
+          history.unshift({
             id: tab.id,
             title: tab.title || '無題のタブ',
             url: tab.url,
@@ -129,9 +164,10 @@ async function handleAudibleChange(tabId, audible) {
           });
 
           // 最大5件に制限
-          if (audioHistory.length > 5) {
-            audioHistory = audioHistory.slice(0, 5);
+          if (history.length > 5) {
+            history = history.slice(0, 5);
           }
+          await saveAudioHistory(history);
         }
       }
     }
@@ -147,39 +183,57 @@ browserAPI.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
     updateExtensionState();
   } else {
     // タイトルやURL、ファビコンが更新された場合、履歴内の情報も更新する
-    const historyItemIndex = audioHistory.findIndex(item => item.id === tabId);
-    if (historyItemIndex !== -1) {
-      try {
+    try {
+      let history = await getAudioHistory();
+      const historyItemIndex = history.findIndex(item => item.id === tabId);
+      if (historyItemIndex !== -1) {
         const tab = await browserAPI.tabs.get(tabId);
         if (tab) {
-          audioHistory[historyItemIndex].title = tab.title || audioHistory[historyItemIndex].title;
-          audioHistory[historyItemIndex].url = tab.url || audioHistory[historyItemIndex].url;
-          audioHistory[historyItemIndex].favIconUrl = tab.favIconUrl || audioHistory[historyItemIndex].favIconUrl;
+          history[historyItemIndex].title = tab.title || history[historyItemIndex].title;
+          history[historyItemIndex].url = tab.url || history[historyItemIndex].url;
+          history[historyItemIndex].favIconUrl = tab.favIconUrl || history[historyItemIndex].favIconUrl;
+          await saveAudioHistory(history);
         }
-      } catch (err) {
-        console.error('Failed to update history item on tab update:', err);
       }
+    } catch (err) {
+      console.error('Failed to update history item on tab update:', err);
     }
   }
 });
 
 // タブが閉じられたときの処理
-browserAPI.tabs.onRemoved.addListener((tabId) => {
+browserAPI.tabs.onRemoved.addListener(async (tabId) => {
   activeAudibleTabs.delete(tabId);
   // 閉じられたタブは履歴からも即座に削除する
-  audioHistory = audioHistory.filter(item => item.id !== tabId);
+  try {
+    let history = await getAudioHistory();
+    const filtered = history.filter(item => item.id !== tabId);
+    await saveAudioHistory(filtered);
+  } catch (e) {
+    console.error('Failed to remove history item on tab remove:', e);
+  }
   updateExtensionState();
 });
 
 browserAPI.tabs.onActivated.addListener(updateExtensionState);
 
-browserAPI.runtime.onInstalled.addListener(updateExtensionState);
-browserAPI.runtime.onStartup.addListener(updateExtensionState);
+// インストール/リロード時、およびブラウザ起動時に履歴を初期化する
+browserAPI.runtime.onInstalled.addListener(async () => {
+  await clearHistory();
+  updateExtensionState();
+});
+
+browserAPI.runtime.onStartup.addListener(async () => {
+  await clearHistory();
+  updateExtensionState();
+});
 
 // ポップアップからの履歴要求メッセージの処理
 browserAPI.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === 'getHistory') {
-    sendResponse({ history: audioHistory });
+    getAudioHistory().then((history) => {
+      sendResponse({ history: history });
+    });
   }
   return true; // 非同期のレスポンスを有効にする
 });

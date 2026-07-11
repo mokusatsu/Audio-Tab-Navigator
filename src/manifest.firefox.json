@@ -5,7 +5,8 @@
   "description": "音声を出力しているタブを素早く見つけ、切り替えやクローズを行うための拡張機能です。",
   "permissions": [
     "tabs",
-    "theme"
+    "theme",
+    "storage"
   ],
   "action": {
     "default_popup": "popup.html"

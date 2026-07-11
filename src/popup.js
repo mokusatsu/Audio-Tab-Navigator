@@ -187,16 +187,10 @@
         historyEmptyMessage.classList.add('hidden');
         const historyFragment = document.createDocumentFragment();
         for (const item of historyTabs) {
-          // 安全のために、タブが実際にまだ存在するかチェック
-          try {
-            const tab = await browserAPI.tabs.get(item.id);
-            if (tab) {
-              const li = createTabItemElement(tab, true, item.timestamp);
-              historyFragment.appendChild(li);
-            }
-          } catch (e) {
-            // タブが存在しない場合は描画をスキップ
-          }
+          // 生存確認は background.js が完全に管理しているため、
+          // popup.js 側では tabs.get を行わず、直接描画する（スリープ時の非表示バグを防止）
+          const li = createTabItemElement(item, true, item.timestamp);
+          historyFragment.appendChild(li);
         }
         historyTabList.appendChild(historyFragment);
       }
