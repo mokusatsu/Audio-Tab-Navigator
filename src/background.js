@@ -3,6 +3,13 @@
  */
 const browserAPI = (typeof browser !== 'undefined') ? browser : chrome;
 
+/**
+ * タブの表示用タイトルを取得（ローカライズ対応）
+ */
+function getTabDisplayTitle(tab) {
+  return tab.title || browserAPI.i18n.getMessage('untitledTab');
+}
+
 // 現在音声再生中のタブIDのセット（音声停止時の検知に使用）
 const activeAudibleTabs = new Set();
 
@@ -157,7 +164,7 @@ async function handleAudibleChange(tabId, audible) {
           // 先頭に新規履歴を追加
           history.unshift({
             id: tab.id,
-            title: tab.title || '無題のタブ',
+            title: getTabDisplayTitle(tab),
             url: tab.url,
             favIconUrl: tab.favIconUrl || '',
             timestamp: Date.now()
@@ -258,4 +265,91 @@ browserAPI.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     });
   }
   return true; // 非同期のレスポンスを有効にする
+});
+
+/**
+ * 音声再生中タブを順番に巡回する
+ */
+async function cycleAudibleTabs() {
+  const audibleTabs = await browserAPI.tabs.query({ audible: true });
+  const targets = audibleTabs.filter(tab => typeof tab.id === 'number');
+  if (targets.length === 0) {
+    return;
+  }
+
+  // 1. windowId の昇順、2. 同一ウィンドウ内では index の昇順でソート
+  targets.sort((a, b) => {
+    if (a.windowId !== b.windowId) {
+      return a.windowId - b.windowId;
+    }
+    return a.index - b.index;
+  });
+
+  if (targets.length === 1) {
+    const targetTab = targets[0];
+    await browserAPI.tabs.update(targetTab.id, { active: true });
+    await browserAPI.windows.update(targetTab.windowId, { focused: true });
+    return;
+  }
+
+  // 最後にフォーカスされていたウィンドウ内のアクティブタブを取得
+  let lastFocusedWindowId = null;
+  let currentActiveTabId = null;
+  try {
+    const activeTabs = await browserAPI.tabs.query({ active: true, lastFocusedWindow: true });
+    if (activeTabs.length > 0) {
+      lastFocusedWindowId = activeTabs[0].windowId;
+      currentActiveTabId = activeTabs[0].id;
+    }
+  } catch (e) {
+    console.error('Failed to get active tab:', e);
+  }
+
+  if (!lastFocusedWindowId) {
+    try {
+      const win = await browserAPI.windows.getLastFocused();
+      if (win) {
+        lastFocusedWindowId = win.id;
+      }
+    } catch (e) {
+      console.error('Failed to get last focused window:', e);
+    }
+  }
+
+  const currentIndex = targets.findIndex(tab => tab.id === currentActiveTabId);
+  let targetTab;
+
+  if (currentIndex !== -1) {
+    // 現在のアクティブタブが候補内なら、次の候補へ
+    const nextIndex = (currentIndex + 1) % targets.length;
+    targetTab = targets[nextIndex];
+  } else {
+    // 現在のアクティブタブが候補外の場合
+    // 1. 最後にフォーカスされていたウィンドウ内の最も左にある音声タブ
+    const candidateInWindow = targets.find(tab => tab.windowId === lastFocusedWindowId);
+    if (candidateInWindow) {
+      targetTab = candidateInWindow;
+    } else {
+      // 2. 該当しなければ並べ替え済み候補の先頭
+      targetTab = targets[0];
+    }
+  }
+
+  if (targetTab) {
+    await browserAPI.tabs.update(targetTab.id, { active: true });
+    await browserAPI.windows.update(targetTab.windowId, { focused: true });
+  }
+}
+
+// キーボードショートカットのリスナー登録
+browserAPI.commands.onCommand.addListener(async (command) => {
+  if (command !== 'cycle-audible-tabs') {
+    return;
+  }
+
+  try {
+    await cycleAudibleTabs();
+  } catch (error) {
+    console.error('Failed to cycle audible tabs:', error);
+  }
 });

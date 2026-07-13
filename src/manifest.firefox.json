@@ -15,6 +15,14 @@
   "background": {
     "scripts": ["background.js"]
   },
+  "commands": {
+    "cycle-audible-tabs": {
+      "suggested_key": {
+        "default": "Alt+Shift+A"
+      },
+      "description": "__MSG_commandCycleAudibleTabs__"
+    }
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "audio-tab-navigator@example.com",

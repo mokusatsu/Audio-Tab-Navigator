@@ -54,5 +54,73 @@
         "content": "$1"
       }
     }
+  },
+  "untitledTab": {
+    "message": "Untitled tab",
+    "description": "Fallback text shown when a tab has no title"
+  },
+  "muteTabAriaLabel": {
+    "message": "Mute tab \"$TAB_TITLE$\"",
+    "description": "Accessible name for the button that mutes a tab",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "unmuteTabAriaLabel": {
+    "message": "Unmute tab \"$TAB_TITLE$\"",
+    "description": "Accessible name for the button that unmutes a tab",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "mutedStatus": {
+    "message": "Muted",
+    "description": "Text displayed for muted tabs"
+  },
+  "tabMutedAnnouncement": {
+    "message": "Muted tab \"$TAB_TITLE$\".",
+    "description": "Message announced by screen readers when a tab is muted",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "tabUnmutedAnnouncement": {
+    "message": "Unmuted tab \"$TAB_TITLE$\".",
+    "description": "Message announced by screen readers when a tab is unmuted",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "operationFailed": {
+    "message": "The operation could not be completed.",
+    "description": "Message displayed/announced when an operation fails"
+  },
+  "muteAllTabs": {
+    "message": "Mute all",
+    "description": "Text for the button that mutes all tabs"
+  },
+  "muteAllComplete": {
+    "message": "All audible tabs are muted.",
+    "description": "Message announced by screen readers when all tabs are muted"
+  },
+  "muteAllPartialFailure": {
+    "message": "Some tabs could not be muted.",
+    "description": "Message announced by screen readers when some tabs fail to mute"
+  },
+  "commandCycleAudibleTabs": {
+    "message": "Go to the next audible tab",
+    "description": "Description of the shortcut that cycles through audible tabs"
   }
 }
