@@ -29,6 +29,23 @@
       <ul id="history-tab-list" class="tab-list"></ul>
     </section>
   </main>
+  <footer class="popup-footer">
+    <div class="shortcut-container">
+      <div id="shortcut-warning-area" class="shortcut-warning hidden" role="alert">
+        <span class="warning-icon" aria-hidden="true">⚠️</span>
+        <span data-i18n="shortcutConflictWarning">ショートカットの競合が検出されました。他の拡張機能と衝突している可能性があります。</span>
+      </div>
+      <div class="shortcut-row">
+        <span id="shortcut-status-text" class="shortcut-status-text"></span>
+        <button id="shortcut-settings-button" type="button" class="shortcut-settings-button">
+          <span id="shortcut-button-text" data-i18n="changeShortcut">変更</span>
+        </button>
+      </div>
+      <div id="shortcut-instructions-panel" class="shortcut-instructions hidden">
+        <p id="shortcut-instructions-text" data-i18n="shortcutInstructionsChrome">アドレスバーで chrome://extensions/shortcuts を開き、Audio Tab Navigatorのショートカットを変更してください。</p>
+      </div>
+    </div>
+  </footer>
   <div id="status-message" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <script src="popup.js"></script>
 </body>

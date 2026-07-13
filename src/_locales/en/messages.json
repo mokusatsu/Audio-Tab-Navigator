@@ -122,5 +122,39 @@
   "commandCycleAudibleTabs": {
     "message": "Go to the next audible tab",
     "description": "Description of the shortcut that cycles through audible tabs"
+  },
+  "shortcutLabel": {
+    "message": "Shortcut: $SHORTCUT$",
+    "description": "Label displaying the current shortcut key",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+A"
+      }
+    }
+  },
+  "shortcutUnassigned": {
+    "message": "No shortcut is assigned",
+    "description": "Text displayed when no shortcut is configured"
+  },
+  "changeShortcut": {
+    "message": "Change",
+    "description": "Text for the button to change the shortcut"
+  },
+  "configureShortcut": {
+    "message": "Set shortcut",
+    "description": "Text for the button to configure the shortcut"
+  },
+  "shortcutInstructionsChrome": {
+    "message": "Open chrome://extensions/shortcuts in the address bar and change the shortcut for Audio Tab Navigator.",
+    "description": "Instruction text for manually opening shortcut settings in Chrome"
+  },
+  "shortcutSettingsFailed": {
+    "message": "Could not open the shortcut settings",
+    "description": "Message shown when opening shortcut settings fails"
+  },
+  "shortcutConflictWarning": {
+    "message": "Shortcut conflict detected. It may conflict with another extension.",
+    "description": "Warning message displayed when shortcut conflict is detected on install"
   }
 }

@@ -328,6 +328,87 @@ h1 {
   outline-offset: 2px;
 }
 
+/* Footer & Shortcut Customize */
+.popup-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 8px 12px;
+  background-color: var(--card-bg);
+}
+
+.shortcut-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.shortcut-status-text {
+  font-size: 11px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.shortcut-settings-button {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.shortcut-settings-button:hover {
+  background-color: var(--card-hover);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.shortcut-settings-button:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.shortcut-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--danger-color);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 10px;
+  color: var(--danger-color);
+  line-height: 1.4;
+}
+
+.warning-icon {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.shortcut-instructions {
+  background-color: var(--bg-color);
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-top: 4px;
+}
+
+.shortcut-instructions p {
+  margin: 0;
+  font-size: 9.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .sound-wave {
@@ -337,7 +418,8 @@ h1 {
   .tab-item,
   .tab-main,
   .btn,
-  .header-action {
+  .header-action,
+  .shortcut-settings-button {
     transition: none;
   }
 }

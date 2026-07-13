@@ -8,6 +8,11 @@
 
   const muteAllButton = document.getElementById('mute-all-button');
   const statusMessage = document.getElementById('status-message');
+  const shortcutSettingsButton = document.getElementById('shortcut-settings-button');
+  const shortcutStatusText = document.getElementById('shortcut-status-text');
+  const shortcutButtonText = document.getElementById('shortcut-button-text');
+  const shortcutWarningArea = document.getElementById('shortcut-warning-area');
+  const shortcutInstructionsPanel = document.getElementById('shortcut-instructions-panel');
 
   // Firefoxの現在のテーマを取得して適用
   async function initTheme() {
@@ -394,8 +399,98 @@
     });
   }
 
+  async function refreshShortcutDisplay() {
+    try {
+      const commands = await browserAPI.commands.getAll();
+      const cycleCommand = commands.find(c => c.name === 'cycle-audible-tabs');
+      const isAssigned = Boolean(cycleCommand && cycleCommand.shortcut);
+
+      if (shortcutStatusText) {
+        if (isAssigned) {
+          shortcutStatusText.textContent = browserAPI.i18n.getMessage('shortcutLabel', [cycleCommand.shortcut]);
+        } else {
+          shortcutStatusText.textContent = browserAPI.i18n.getMessage('shortcutUnassigned');
+        }
+      }
+
+      if (shortcutButtonText) {
+        if (isAssigned) {
+          shortcutButtonText.textContent = browserAPI.i18n.getMessage('changeShortcut');
+        } else {
+          shortcutButtonText.textContent = browserAPI.i18n.getMessage('configureShortcut');
+        }
+      }
+
+      // Check storage warning flag
+      const storage = await new Promise(resolve => {
+        browserAPI.storage.local.get(['shortcutNeedsAttention'], result => {
+          resolve(result || {});
+        });
+      });
+
+      if (shortcutWarningArea) {
+        if (storage.shortcutNeedsAttention && !isAssigned) {
+          shortcutWarningArea.classList.remove('hidden');
+        } else {
+          shortcutWarningArea.classList.add('hidden');
+        }
+      }
+    } catch (err) {
+      console.error('Failed to refresh shortcut display:', err);
+    }
+  }
+
+  async function openShortcutSettings() {
+    if (browserAPI.commands && typeof browserAPI.commands.openShortcutSettings === 'function') {
+      try {
+        await browserAPI.commands.openShortcutSettings();
+        return true;
+      } catch (e) {
+        console.error('API openShortcutSettings failed:', e);
+      }
+    }
+    return false;
+  }
+
+  if (shortcutSettingsButton) {
+    shortcutSettingsButton.addEventListener('click', async () => {
+      try {
+        await new Promise((resolve) => {
+          browserAPI.storage.local.remove('shortcutNeedsAttention', () => {
+            resolve();
+          });
+        });
+        if (shortcutWarningArea) {
+          shortcutWarningArea.classList.add('hidden');
+        }
+      } catch (err) {
+        console.error('Failed to clear shortcut attention flag:', err);
+      }
+
+      const opened = await openShortcutSettings();
+      if (!opened) {
+        if (shortcutInstructionsPanel) {
+          shortcutInstructionsPanel.classList.remove('hidden');
+        }
+        announce('shortcutInstructionsChrome');
+      } else {
+        if (shortcutInstructionsPanel) {
+          shortcutInstructionsPanel.classList.add('hidden');
+        }
+      }
+    });
+  }
+
+  window.addEventListener('focus', refreshShortcutDisplay);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      refreshShortcutDisplay();
+    }
+  });
+
   document.addEventListener('DOMContentLoaded', () => {
     applyI18n();
     refreshTabList();
+    refreshShortcutDisplay();
   });
 })();

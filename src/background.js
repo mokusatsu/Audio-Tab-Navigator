@@ -224,10 +224,21 @@ browserAPI.tabs.onRemoved.addListener(async (tabId) => {
 
 browserAPI.tabs.onActivated.addListener(updateExtensionState);
 
-// インストール/リロード時、およびブラウザ起動時に履歴を初期化する
-browserAPI.runtime.onInstalled.addListener(async () => {
+browserAPI.runtime.onInstalled.addListener(async (details) => {
   await clearHistory();
   updateExtensionState();
+
+  if (details && details.reason === 'install') {
+    try {
+      const commands = await browserAPI.commands.getAll();
+      const cycleCommand = commands.find(c => c.name === 'cycle-audible-tabs');
+      if (!cycleCommand || !cycleCommand.shortcut) {
+        await browserAPI.storage.local.set({ shortcutNeedsAttention: true });
+      }
+    } catch (e) {
+      console.error('Failed to check shortcut conflict on install:', e);
+    }
+  }
 });
 
 browserAPI.runtime.onStartup.addListener(async () => {
