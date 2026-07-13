@@ -54,5 +54,107 @@
         "content": "$1"
       }
     }
+  },
+  "untitledTab": {
+    "message": "無題のタブ",
+    "description": "タイトルが存在しないタブに表示する代替テキスト"
+  },
+  "muteTabAriaLabel": {
+    "message": "タブ「$TAB_TITLE$」をミュート",
+    "description": "タブをミュートするボタンのアクセシブルネーム",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "unmuteTabAriaLabel": {
+    "message": "タブ「$TAB_TITLE$」のミュートを解除",
+    "description": "タブのミュートを解除するボタンのアクセシブルネーム",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "mutedStatus": {
+    "message": "ミュート中",
+    "description": "ミュート状態のタブに表示するテキスト"
+  },
+  "tabMutedAnnouncement": {
+    "message": "タブ「$TAB_TITLE$」をミュートしました",
+    "description": "タブをミュートしたときの音声読み上げ用メッセージ",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "tabUnmutedAnnouncement": {
+    "message": "タブ「$TAB_TITLE$」のミュートを解除しました",
+    "description": "タブのミュートを解除したときの音声読み上げ用メッセージ",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "operationFailed": {
+    "message": "操作に失敗しました",
+    "description": "操作が失敗したときのメッセージ"
+  },
+  "muteAllTabs": {
+    "message": "すべてミュート",
+    "description": "すべてのタブをミュートするボタンのテキスト"
+  },
+  "muteAllComplete": {
+    "message": "音声タブをすべてミュートしました",
+    "description": "すべてのタブをミュートしたときの音声読み上げ用メッセージ"
+  },
+  "muteAllPartialFailure": {
+    "message": "一部のタブをミュートできませんでした",
+    "description": "一部のタブのミュートに失敗したときの音声読み上げ用メッセージ"
+  },
+  "commandCycleAudibleTabs": {
+    "message": "次の音声タブに移動",
+    "description": "音声タブを順番に巡回するショートカットの説明"
+  },
+  "shortcutLabel": {
+    "message": "ショートカット：$SHORTCUT$",
+    "description": "現在のショートカットキーを表示するラベル",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+A"
+      }
+    }
+  },
+  "shortcutUnassigned": {
+    "message": "ショートカットが未設定です",
+    "description": "ショートカットが未設定の場合に表示するテキスト"
+  },
+  "changeShortcut": {
+    "message": "変更",
+    "description": "ショートカットを変更するボタンのテキスト"
+  },
+  "configureShortcut": {
+    "message": "設定する",
+    "description": "ショートカットを設定するボタンのテキスト"
+  },
+  "shortcutInstructionsChrome": {
+    "message": "アドレスバーで chrome://extensions/shortcuts を開き、Audio Tab Navigatorのショートカットを変更してください。",
+    "description": "Chromeでショートカット設定を手動で開くための案内テキスト"
+  },
+  "shortcutSettingsFailed": {
+    "message": "ショートカット設定を開けませんでした",
+    "description": "ショートカット設定画面の自動オープンに失敗したときのメッセージ"
+  },
+  "shortcutConflictWarning": {
+    "message": "ショートカットの競合が検出されました。他の拡張機能と衝突している可能性があります。",
+    "description": "初期インストール時にショートカットが登録できなかった場合の警告メッセージ"
   }
 }

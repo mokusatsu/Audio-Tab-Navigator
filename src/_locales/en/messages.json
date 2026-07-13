@@ -54,5 +54,107 @@
         "content": "$1"
       }
     }
+  },
+  "untitledTab": {
+    "message": "Untitled tab",
+    "description": "Fallback text shown when a tab has no title"
+  },
+  "muteTabAriaLabel": {
+    "message": "Mute tab \"$TAB_TITLE$\"",
+    "description": "Accessible name for the button that mutes a tab",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "unmuteTabAriaLabel": {
+    "message": "Unmute tab \"$TAB_TITLE$\"",
+    "description": "Accessible name for the button that unmutes a tab",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "mutedStatus": {
+    "message": "Muted",
+    "description": "Text displayed for muted tabs"
+  },
+  "tabMutedAnnouncement": {
+    "message": "Muted tab \"$TAB_TITLE$\".",
+    "description": "Message announced by screen readers when a tab is muted",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "tabUnmutedAnnouncement": {
+    "message": "Unmuted tab \"$TAB_TITLE$\".",
+    "description": "Message announced by screen readers when a tab is unmuted",
+    "placeholders": {
+      "tab_title": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  },
+  "operationFailed": {
+    "message": "The operation could not be completed.",
+    "description": "Message displayed/announced when an operation fails"
+  },
+  "muteAllTabs": {
+    "message": "Mute all",
+    "description": "Text for the button that mutes all tabs"
+  },
+  "muteAllComplete": {
+    "message": "All audible tabs are muted.",
+    "description": "Message announced by screen readers when all tabs are muted"
+  },
+  "muteAllPartialFailure": {
+    "message": "Some tabs could not be muted.",
+    "description": "Message announced by screen readers when some tabs fail to mute"
+  },
+  "commandCycleAudibleTabs": {
+    "message": "Go to the next audible tab",
+    "description": "Description of the shortcut that cycles through audible tabs"
+  },
+  "shortcutLabel": {
+    "message": "Shortcut: $SHORTCUT$",
+    "description": "Label displaying the current shortcut key",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+A"
+      }
+    }
+  },
+  "shortcutUnassigned": {
+    "message": "No shortcut is assigned",
+    "description": "Text displayed when no shortcut is configured"
+  },
+  "changeShortcut": {
+    "message": "Change",
+    "description": "Text for the button to change the shortcut"
+  },
+  "configureShortcut": {
+    "message": "Set shortcut",
+    "description": "Text for the button to configure the shortcut"
+  },
+  "shortcutInstructionsChrome": {
+    "message": "Open chrome://extensions/shortcuts in the address bar and change the shortcut for Audio Tab Navigator.",
+    "description": "Instruction text for manually opening shortcut settings in Chrome"
+  },
+  "shortcutSettingsFailed": {
+    "message": "Could not open the shortcut settings",
+    "description": "Message shown when opening shortcut settings fails"
+  },
+  "shortcutConflictWarning": {
+    "message": "Shortcut conflict detected. It may conflict with another extension.",
+    "description": "Warning message displayed when shortcut conflict is detected on install"
   }
 }
