@@ -330,9 +330,8 @@ h1 {
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .sound-wave span {
-    animation: none;
-    height: 6px;
+  .sound-wave {
+    display: none !important;
   }
 
   .tab-item,
